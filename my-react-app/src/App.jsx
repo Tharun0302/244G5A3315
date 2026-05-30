@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthProvider, AuthContext } from './AuthContext';
+import Login from './Login';
 import Home from './Home';
 import Priority from './Priority';
 import './App.css';
 
-function App() {
+function Dashboard() {
   const [currentPage, setCurrentPage] = useState('home');
+  const { user, logout } = useContext(AuthContext);
 
   return (
     <div className="app">
@@ -24,6 +27,15 @@ function App() {
             >
               Priority Inbox
             </button>
+            <span className="user-info">
+              {user?.name} ({user?.email})
+            </span>
+            <button
+              className="nav-link logout-btn"
+              onClick={logout}
+            >
+              Logout
+            </button>
           </div>
         </div>
       </nav>
@@ -37,6 +49,24 @@ function App() {
         <p>&copy; 2026 Campus Notifications Dashboard. All rights reserved.</p>
       </footer>
     </div>
+  );
+}
+
+function AppContent() {
+  const { user, loading } = useContext(AuthContext);
+
+  if (loading) {
+    return <div className="loading-screen">Loading...</div>;
+  }
+
+  return user ? <Dashboard /> : <Login />;
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

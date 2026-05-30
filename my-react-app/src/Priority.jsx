@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from './AuthContext';
 import NotificationCard from './NotificationCard';
 import { fetchNotifications } from './api';
 
 const Priority = () => {
+  const { user } = useContext(AuthContext);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -19,7 +21,7 @@ const Priority = () => {
       let hasMore = true;
 
       while (hasMore) {
-        const data = await fetchNotifications(page, 100, 'All');
+        const data = await fetchNotifications(page, 100, 'All', user?.userId);
         if (data.notifications && data.notifications.length > 0) {
           allNotifications.push(...data.notifications);
           page++;
@@ -48,7 +50,7 @@ const Priority = () => {
     };
 
     loadNotifications();
-  }, [refreshKey]);
+  }, [refreshKey, user]);
 
   const isNotificationViewed = (id) => {
     const viewedIds = JSON.parse(localStorage.getItem('viewedNotifications')) || [];

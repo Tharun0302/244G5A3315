@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from './AuthContext';
 import NotificationCard from './NotificationCard';
 import { fetchNotifications } from './api';
 
 const Home = () => {
+  const { user } = useContext(AuthContext);
   const [notifications, setNotifications] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFilter, setSelectedFilter] = useState('All');
@@ -15,14 +17,14 @@ const Home = () => {
   useEffect(() => {
     const loadNotifications = async () => {
       setLoading(true);
-      const data = await fetchNotifications(currentPage, limit, selectedFilter);
+      const data = await fetchNotifications(currentPage, limit, selectedFilter, user?.userId);
       setNotifications(data.notifications || []);
       setTotalNotifications(data.total || 0);
       setLoading(false);
     };
 
     loadNotifications();
-  }, [currentPage, selectedFilter, refreshKey]);
+  }, [currentPage, selectedFilter, refreshKey, user]);
 
   const handleFilterChange = (e) => {
     setSelectedFilter(e.target.value);
